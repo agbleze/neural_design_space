@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch
 from torchinfo import summary
 import torchvision.models as models
-
+from neural_design_space.utils.utils import kernel_initializer
 
 class ResNextStem(nn.Module):
     def __init__(self):
