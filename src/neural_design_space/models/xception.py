@@ -247,9 +247,6 @@ class Classifier(nn.Module):
     def forward(self, x):
         x = self.classifier(x)
         return x
-    
-    
-
                 
                 
 def make_model(data, config, device="cuda"):
