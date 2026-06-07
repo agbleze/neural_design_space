@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torchinfo import summary
 from typing import NamedTuple, List, Tuple, Optional, Literal
-
+from neural_design_space.utils.utils import kernel_initializer
 
 
 class SqueezeNetStem(nn.Module):
