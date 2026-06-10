@@ -42,7 +42,7 @@ class WRNClassifier(nn.Module):
         
             
 class WRNIdentityBlock(nn.Module):
-    def __init__(self, n_filters, #k, 
+    def __init__(self, n_filters,
                  dropout_rate, l, stride=None):
         """n_filters: number of filters in the convolutional layers
            k: widening factor
