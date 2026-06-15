@@ -196,7 +196,6 @@ class MobileNetV3InventedNonResidualBlock(nn.Module):
         
         x = self.pointwise_conv(x)
         x = self.bn3(x)
-        #x = self.act3(x)
         return x
  
  
