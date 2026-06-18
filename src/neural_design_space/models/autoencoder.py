@@ -10,15 +10,15 @@ class AutoEncoderStem(nn.Module):
     def __init__(self, latent_dim):
         super().__init__()
         self.encoder = nn.Sequential(
-            nn.LazyConv2d(out_channels=32, kernel_size=3, stride=2, padding=1, bias=False),
-            nn.LazyBatchNorm2d(),
-            nn.ReLU(),
             nn.LazyConv2d(out_channels=64, kernel_size=3, stride=2, padding=1, bias=False),
             nn.LazyBatchNorm2d(),
             nn.ReLU(),
-            # nn.AdaptiveAvgPool2d((1, 1)),
-            # nn.Flatten(),
-            # nn.LazyLinear(out_features=latent_dim)
+            nn.LazyConv2d(out_channels=32, kernel_size=3, stride=2, padding=1, bias=False),
+            nn.LazyBatchNorm2d(),
+            nn.ReLU(),
+            nn.LazyConv2d(out_channels=latent_dim, kernel_size=3, stride=2, padding=1, bias=False),
+            nn.LazyBatchNorm2d(),
+            nn.ReLU()
         )
         
     def forward(self, x):
