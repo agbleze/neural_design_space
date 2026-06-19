@@ -6,7 +6,7 @@ from neural_design_space.utils.utils import kernel_initializer
 
 
 
-class AutoEncoderStem(nn.Module):
+class Encoder(nn.Module):
     def __init__(self, latent_dim):
         super().__init__()
         self.encoder = nn.Sequential(
