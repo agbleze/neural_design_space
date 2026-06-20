@@ -30,8 +30,8 @@ class Decoder(nn.Module):
     def __init__(self, latent_dim):
         super().__init__()
         self.pointwise_conv = nn.Sequential(
-            nn.LazyLinear(out_features=64),
-            nn.LazyBatchNorm1d(),
+            nn.LazyConv2d(out_channels=64, kernel_size=1, bias=False),
+            nn.LazyBatchNorm2d(),
             nn.ReLU()
         )
         self.decoder = nn.Sequential(
@@ -46,3 +46,8 @@ class Decoder(nn.Module):
         x = x.view(x.size(0), 64, 1, 1)
         x = self.decoder(x)
         return x
+    
+    
+
+def build_model():
+    pass
