@@ -91,11 +91,16 @@ def make_model(layer_channels, data, device="cuda",
                initializer_type="he_normal"
                ):
     out_channels = data.shape[1]
-    model = AutoEncoder(layer_channels=layer_channels, out_channels=out_channels).to(device)
-    data.to(device)
+    input_size = tuple(data.shape[2:])
+    model = AutoEncoder(layer_channels=layer_channels, 
+                        input_size=input_size,
+                        out_channels=out_channels
+                        ).to(device)
+    data = data.to(device)
     _ = model(data)
     model.apply(lambda module: kernel_initializer(module, initializer_type=initializer_type))
     return model
+
 
 
 data = torch.randn(1, 3, 224, 224)
