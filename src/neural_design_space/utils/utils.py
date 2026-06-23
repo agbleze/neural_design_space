@@ -16,3 +16,29 @@ def kernel_initializer(m, kernel_initializer="he_normal"):
             nn.init.xavier_uniform_(m.weight)
         if m.bias is not None:
             nn.init.zeros_(m.bias)
+            
+            
+
+def train_batch(input, model, criterion, optimizer, device):
+    model.train()
+    optimizer.zero_grad()
+    noisy_input, clean_input = input
+    noisy_input = noisy_input.to(device)
+    clean_input = clean_input.to(device)
+    output = model(noisy_input)
+    loss = criterion(output, clean_input)
+    loss.backward()
+    optimizer.step()
+    return loss
+
+#%% define validation func
+@torch.no_grad()
+def validate_batch(input, model, criterion, device):
+    model.eval().to(device)
+    noisy_input, clean_input = input
+    noisy_input = noisy_input.to(device)
+    clean_input = clean_input.to(device)
+    output = model(noisy_input)
+    loss = criterion(output, clean_input)
+    return loss
+       
