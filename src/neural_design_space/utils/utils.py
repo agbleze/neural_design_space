@@ -31,7 +31,6 @@ def train_batch(input, model, criterion, optimizer, device):
     optimizer.step()
     return loss
 
-#%% define validation func
 @torch.no_grad()
 def validate_batch(input, model, criterion, device):
     model.eval().to(device)
