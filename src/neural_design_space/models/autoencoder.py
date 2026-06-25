@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchinfo import summary
 from neural_design_space.utils.utils import kernel_initializer
+import torch.nn.functional as F
 
 
 
@@ -53,23 +54,39 @@ class Decoder(nn.Module):
         x = self.decoder(x)
         #x = self.decoder_activation(x)
         return x
-    
+        
 
 class ReconstructTask(nn.Module):
-    def __init__(self, out_channels):
+    def __init__(self, out_channels, input_size=(28, 28),
+                 last_act_func = "tanh"
+                 ):
         super().__init__()
+        self.input_size = input_size
         self.task_layer = nn.Sequential(nn.LazyConvTranspose2d(out_channels=out_channels,
-                                                               kernel_size=3, stride=2, padding=1, 
-                                                              output_padding=1, bias=False
+                                                               kernel_size=3, stride=2, 
+                                                               padding=1, 
+                                                              #output_padding=1, 
+                                                              bias=False
                                                               ),
-                                        nn.Sigmoid()
                                         )
+        
+        if last_act_func == "tanh":
+            self.last_act = nn.Tanh() 
+        elif last_act_func == "sigmoid":
+            self.last_act = nn.Sigmoid()
+        elif last_act_func == "relu":
+            self.last_act = nn.ReLU()
+        elif last_act_func == "leaky_relu":
+            self.last_act = nn.LeakyReLU()
+        else:
+            self.last_act = nn.Identity()
         
     def forward(self, x):
         x = self.task_layer(x)
+        x = F.interpolate(x, size=self.input_size, mode="bilinear", align_corners=False)
+        x = self.last_act(x)
         return x
-    
-    
+        
     
 class AutoEncoder(nn.Module):
     def __init__(self, layer_channels: list[int], out_channels=3):
