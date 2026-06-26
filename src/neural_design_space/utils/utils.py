@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-             
+from copy import deepcopy
+            
            
 def kernel_initializer(m, kernel_initializer="he_normal"):
     """Kernel initializer to be used on initializing Lazy modules, using He normal initialization for convolutional layers and Xavier uniform initialization for linear layers
@@ -40,4 +41,47 @@ def validate_batch(input, model, criterion, device):
     output = model(noisy_input)
     loss = criterion(output, clean_input)
     return loss
-       
+
+
+
+
+def train_convaec(model, criterion, optimizer, trn_dl, val_dl, num_epochs, scheduler):
+    model.to(device)
+    criterion.to(device)
+    log = Report(num_epochs)
+    history = {"train_epoch_loss": [], "val_epoch_loss": []}
+    best_model = None
+    best_val_loss = float("inf")
+
+    for epoch in range(num_epochs):
+        N = len(trn_dl)
+        running_train_loss = 0.0
+        model.train()
+        for ix, data in enumerate(trn_dl):
+            loss = train_batch(data, model, criterion, optimizer)
+            running_train_loss += loss
+            log.record(pos=(epoch + (ix+1)/N), trn_loss=loss, end="\r")
+        train_epoch_loss = running_train_loss / N    
+        history["train_epoch_loss"].append(train_epoch_loss)
+        
+        N = len(val_dl)
+        running_val_loss = 0.0
+        model.eval()
+        for ix, data in enumerate(val_dl):
+            loss = validate_batch(data, model, criterion)
+            running_val_loss += loss
+            log.record(pos=(epoch + (ix+1)/N), val_loss=loss, end="\r")
+        val_epoch_loss = running_val_loss / N
+        history["val_epoch_loss"].append(val_epoch_loss)
+        log.report_avgs(epoch+1)
+        
+        if scheduler:
+            if not torch.isnan(val_epoch_loss):
+                scheduler.step(val_epoch_loss)    
+                    
+        if val_epoch_loss < best_val_loss:
+            best_val_loss = val_epoch_loss
+            best_model = deepcopy(model)
+        
+    log.plot_epochs(log=True)
+    return best_model, log, history
